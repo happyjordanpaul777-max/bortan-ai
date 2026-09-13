@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BORTAN AI</title>
+
+<style>
+
+/* =========================
+   GLOBAL
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --sidebar-width:240px;
+    --text:#eaf3ff;
+}
+
+body{
+    min-height:100vh;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--text);
+    overflow-x:hidden;
+
+    background:
+        radial-gradient(ellipse at 50% 25%,rgba(54,90,145,.24),transparent 42%),
+        radial-gradient(ellipse at 10% 70%,rgba(0,120,180,.12),transparent 40%),
+        radial-gradient(ellipse at 90% 60%,rgba(140,50,180,.12),transparent 40%),
+        linear-gradient(180deg,#02040c,#07111d,#020611);
+}
+
+/* =========================
+   APP
+========================= */
+
+.app{
+    display:flex;
+    min-height:100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    width:var(--sidebar-width);
+    min-height:100vh;
+    padding:18px 14px;
+
+    background:rgba(2,7,18,.88);
+    border-right:1px solid rgba(100,160,255,.15);
+
+    transition:
+        width .35s ease,
+        padding .35s ease,
+        transform .35s ease;
+
+    overflow:hidden;
+    flex-shrink:0;
+}
+
+.sidebar.closed{
+    width:0;
+    padding-left:0;
+    padding-right:0;
+    border:none;
+}
+
+.sidebarTop{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:24px;
+}
+
+.logo{
+    width:58px;
+    height:58px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:18px;
+
+    font-size:27px;
+    font-weight:bold;
+
+    background:linear-gradient(
+        135deg,
+        #4fd5ff,
+        #8674ff,
+        #f56fc8,
+        #ffd365
+    );
+
+    box-shadow:0 0 35px rgba(80,160,255,.45);
+}
+
+.closeSidebar{
+    width:40px;
+    height:40px;
+
+    border-radius:12px;
+    border:1px solid rgba(100,160,255,.2);
+
+    background:rgba(255,255,255,.05);
+    color:white;
+
+    cursor:pointer;
+    font-size:18px;
+}
+
+.newChat{
+    width:100%;
+    padding:14px;
+    margin-bottom:18px;
+
+    border:none;
+    border-radius:15px;
+
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+
+    background:linear-gradient(
+        135deg,
+        #38caff,
+        #716cff,
+        #c45be8
+    );
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+}
+
+.menu button{
+    width:100%;
+    min-height:55px;
+
+    display:flex;
+    align-items:center;
+    gap:13px;
+
+    padding:12px 14px;
+
+    border-radius:14px;
+    border:1px solid rgba(100,160,255,.12);
+
+    background:rgba(5,15,35,.35);
+    color:#c7d6f4;
+
+    cursor:pointer;
+
+    font-size:11px;
+    letter-spacing:1px;
+
+    text-align:left;
+
+    transition:.25s;
+}
+
+.menu button:hover,
+.menu button.active{
+    background:rgba(25,60,110,.38);
+    border-color:rgba(80,190,255,.65);
+}
+
+.menuIcon{
+    font-size:20px;
+    width:24px;
+    text-align:center;
+}
+
+.historyTitle{
+    margin-top:25px;
+    margin-bottom:10px;
+
+    font-size:10px;
+    letter-spacing:2px;
+    color:#7086b2;
+}
+
+.historyList{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+
+    max-height:210px;
+    overflow-y:auto;
+}
+
+.historyItem{
+    padding:10px;
+    border-radius:10px;
+
+    background:rgba(255,255,255,.04);
+
+    color:#b6c7e5;
+    font-size:11px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+    cursor:pointer;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    flex:1;
+    min-width:0;
+    padding:24px 35px;
+}
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding-bottom:20px;
+
+    border-bottom:1px solid rgba(100,160,255,.15);
+}
+
+.headerLeft{
+    display:flex;
+    align-items:center;
+}
+
+.openSidebar{
+    width:45px;
+    height:45px;
+
+    margin-right:15px;
+
+    display:none;
+
+    border-radius:13px;
+    border:1px solid rgba(100,160,255,.2);
+
+    background:rgba(5,15,35,.6);
+    color:white;
+
+    font-size:21px;
+    cursor:pointer;
+}
+
+.brand h1{
+    font-size:34px;
+    letter-spacing:10px;
+
+    background:linear-gradient(
+        90deg,
+        white,
+        #b9d4ff,
+        #a687ff
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
+
+.brand p{
+    margin-top:8px;
+
+    font-size:9px;
+    letter-spacing:1.5px;
+
+    color:#8499c5;
+}
+
+.online{
+    padding:12px 17px;
+
+    border-radius:30px;
+
+    border:1px solid rgba(70,255,210,.4);
+
+    color:#7effd6;
+
+    font-size:10px;
+    letter-spacing:2px;
+
+    background:rgba(0,80,60,.12);
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tab{
+    display:none;
+}
+
+.tab.active{
+    display:block;
+}
+
+.panel{
+    margin-top:22px;
+    min-height:calc(100vh - 145px);
+
+    padding:28px;
+
+    border-radius:25px;
+
+    border:1px solid rgba(120,180,255,.18);
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(40,75,120,.12),
+            transparent 55%
+        ),
+        rgba(2,7,18,.5);
+}
+
+.title{
+    text-align:center;
+    margin-bottom:12px;
+}
+
+.title h2{
+    font-size:21px;
+    letter-spacing:6px;
+}
+
+.title p{
+    margin-top:8px;
+
+    font-size:10px;
+    letter-spacing:2px;
+
+    color:#8297c5;
+}
+
+/* =========================
+   BRAIN
+========================= */
+
+.brainArea{
+    position:relative;
+
+    width:100%;
+    height:430px;
+
+    overflow:hidden;
+}
+
+.brainArea::before{
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:700px;
+    height:350px;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(70,110,160,.2),
+            transparent 70%
+        );
+
+    filter:blur(25px);
+}
+
+.waveSvg{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+}
+
+.wavePath{
+    fill:none;
+
+    stroke:#f8fbff;
+    stroke-width:4;
+
+    stroke-linecap:round;
+
+    filter:
+        drop-shadow(0 0 4px white)
+        drop-shadow(0 0 12px #8ccaff)
+        drop-shadow(0 0 25px rgba(90,140,255,.65));
+
+    transition:.3s;
+}
+
+.wavePath.active{
+    stroke:white;
+    stroke-width:6;
+
+    filter:
+        drop-shadow(0 0 8px white)
+        drop-shadow(0 0 22px #8ccaff)
+        drop-shadow(0 0 45px #778cff);
+}
+
+/* ENERGY PARTICLE */
+
+.energy{
+    fill:white;
+    display:none;
+
+    filter:
+        drop-shadow(0 0 7px white)
+        drop-shadow(0 0 18px #85cfff)
+        drop-shadow(0 0 35px #778cff);
+}
+
+/* =========================
+   CORE
+========================= */
+
+.coreShell{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:185px;
+    height:185px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:5;
+
+    border:2px solid rgba(80,190,255,.2);
+
+    box-shadow:
+        inset 0 0 35px rgba(70,170,255,.18),
+        0 0 40px rgba(70,150,255,.2);
+}
+
+.coreShell::before{
+    content:"";
+
+    position:absolute;
+
+    width:155px;
+    height:155px;
+
+    border-radius:50%;
+
+    border:2px solid rgba(100,210,255,.25);
+
+    box-shadow:0 0 25px rgba(80,160,255,.25);
+}
+
+.core{
+    position:relative;
+
+    width:125px;
+    height:125px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:linear-gradient(
+        135deg,
+        #4fdcff,
+        #8378ff,
+        #f76fc9,
+        #ff9d70,
+        #ffe36b
+    );
+
+    box-shadow:
+        0 0 30px rgba(70,210,255,.7),
+        0 0 65px rgba(130,90,255,.6);
+
+    animation:corePulse 3s infinite alternate;
+}
+
+.core.active{
+    animation:coreDeep 1s infinite alternate;
+}
+
+.coreText{
+    text-align:center;
+
+    font-size:16px;
+    font-weight:bold;
+
+    letter-spacing:2px;
+
+    text-shadow:0 0 10px white;
+}
+
+.coreText span{
+    display:block;
+
+    margin-top:5px;
+
+    font-size:9px;
+    letter-spacing:3px;
+}
+
+@keyframes corePulse{
+
+    from{
+        transform:scale(1);
+    }
+
+    to{
+        transform:scale(1.08);
+        box-shadow:
+            0 0 48px rgba(70,210,255,.95),
+            0 0 95px rgba(130,90,255,.85),
+            0 0 135px rgba(255,140,90,.5);
+    }
+}
+
+@keyframes coreDeep{
+
+    from{
+        transform:scale(1.03);
+    }
+
+    to{
+        transform:scale(1.18);
+
+        box-shadow:
+            0 0 60px white,
+            0 0 120px #8ccaff,
+            0 0 180px #9d7cff;
+    }
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.searchRow{
+    display:flex;
+    gap:15px;
+
+    margin-top:10px;
+}
+
+.searchBox{
+    flex:1;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 18px;
+
+    border-radius:16px;
+
+    border:1px solid rgba(90,170,255,.32);
+
+    background:rgba(5,18,45,.78);
+}
+
+.searchIcon{
+    font-size:22px;
+    margin-right:10px;
+}
+
+.searchBox input{
+    width:100%;
+    height:62px;
+
+    border:none;
+    outline:none;
+
+    background:transparent;
+
+    color:white;
+    font-size:16px;
+}
+
+.send{
+    min-width:145px;
+
+    border:none;
+    border-radius:16px;
+
+    cursor:pointer;
+
+    color:white;
+    font-weight:bold;
+
+    background:linear-gradient(
+        135deg,
+        #38caff,
+        #716cff,
+        #c45be8
+    );
+}
+
+/* =========================
+   PROCESSING
+========================= */
+
+.processingGrid{
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:15px;
+
+    margin-top:22px;
+}
+
+.processCard{
+    padding:18px;
+
+    border-radius:18px;
+
+    background:rgba(5,15,35,.55);
+
+    border:1px solid rgba(100,160,255,.16);
+}
+
+.processName{
+    display:flex;
+    justify-content:space-between;
+
+    font-size:10px;
+    letter-spacing:1px;
+
+    color:#b8c9e8;
+}
+
+.processPercent{
+    color:#72dcff;
+    font-weight:bold;
+}
+
+.bar{
+    height:7px;
+
+    margin-top:13px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.08);
+
+    overflow:hidden;
+}
+
+.fill{
+    width:100%;
+    height:100%;
+
+    border-radius:10px;
+
+    background:linear-gradient(
+        90deg,
+        #38caff,
+        #756bff,
+        #ef6fd2
+    );
+
+    transition:width 1s ease;
+}
+
+.statusArea{
+    margin-top:18px;
+
+    padding:16px 20px;
+
+    border-radius:16px;
+
+    text-align:center;
+
+    border:1px solid rgba(100,180,255,.15);
+
+    background:rgba(5,15,35,.45);
+
+    color:#9bb3dc;
+
+    font-size:12px;
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chatMessages{
+    min-height:420px;
+    max-height:540px;
+
+    overflow-y:auto;
+
+    padding:15px;
+}
+
+.message{
+    max-width:78%;
+
+    padding:14px 18px;
+
+    margin:12px 0;
+
+    border-radius:18px;
+
+    line-height:1.5;
+}
+
+.userMessage{
+    margin-left:auto;
+
+    background:linear-gradient(
+        135deg,
+        #187fcf,
+        #655ee0
+    );
+
+    border-bottom-right-radius:4px;
+}
+
+.bortanMessage{
+    margin-right:auto;
+
+    background:rgba(20,50,90,.65);
+
+    border:1px solid rgba(100,190,255,.25);
+
+    border-bottom-left-radius:4px;
+}
+
+.privateNotice{
+    padding:13px;
+
+    margin-bottom:15px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    color:#d7c7ff;
+
+    background:rgba(120,80,255,.12);
+
+    border:1px solid rgba(150,110,255,.28);
+}
+
+/* =========================
+   LIBRARY
+========================= */
+
+.libraryGrid{
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:18px;
+
+    margin-top:30px;
+}
+
+.libraryCard{
+    min-height:160px;
+
+    padding:22px;
+
+    border-radius:20px;
+
+    border:1px solid rgba(100,160,255,.16);
+
+    background:rgba(5,15,35,.5);
+
+    text-align:center;
+
+    transition:.3s;
+}
+
+.libraryCard:hover{
+    transform:translateY(-4px);
+
+    border-color:rgba(100,210,255,.5);
+}
+
+.libraryIcon{
+    font-size:42px;
+    margin-bottom:15px;
+}
+
+.libraryCard p{
+    margin-top:10px;
+
+    font-size:11px;
+    color:#8297c5;
+}
+
+/* =========================
+   LIVE HISTORY
+========================= */
+
+.liveChat{
+    margin-top:25px;
+
+    border-top:1px solid rgba(100,160,255,.15);
+
+    padding-top:20px;
+}
+
+.liveHistory{
+    max-height:300px;
+
+    overflow-y:auto;
+
+    padding:10px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:900px){
+
+    .processingGrid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .libraryGrid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .sidebar{
+        position:fixed;
+        z-index:100;
+
+        height:100vh;
+    }
+
+    .sidebar.closed{
+        width:var(--sidebar-width);
+        padding:18px 14px;
+
+        transform:translateX(-100%);
+    }
+
+    .main{
+        padding:15px;
+    }
+
+    .openSidebar{
+        display:block;
+    }
+
+    .brand h1{
+        font-size:22px;
+        letter-spacing:5px;
+    }
+
+    .online,
+    .brand p{
+        display:none;
+    }
+
+    .panel{
+        padding:16px;
+    }
+
+    .brainArea{
+        height:300px;
+    }
+
+    .coreShell{
+        width:140px;
+        height:140px;
+    }
+
+    .coreShell::before{
+        width:118px;
+        height:118px;
+    }
+
+    .core{
+        width:92px;
+        height:92px;
+    }
+
+    .searchRow{
+        flex-direction:column;
+    }
+
+    .send{
+        height:58px;
+    }
+
+    .processingGrid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+<div class="sidebarTop">
+
+<div class="logo">B</div>
+
+<button class="closeSidebar" onclick="toggleSidebar()">
+✕
+</button>
+
+</div>
+
+<button class="newChat" onclick="newChat()">
+＋ NEW CHAT
+</button>
+
+<div class="menu">
+
+<button class="active" onclick="openTab('chat',this)">
+<span class="menuIcon">💬</span> CHAT
+</button>
+
+<button onclick="openPrivateChat(this)">
+<span class="menuIcon">🔒</span> PRIVATE CHAT
+</button>
+
+<button onclick="openTab('brain',this)">
+<span class="menuIcon">🧠</span> BRAIN
+</button>
+
+<button onclick="openTab('live',this)">
+<span class="menuIcon">⚡</span> LIVE
+</button>
+
+<button onclick="openTab('library',this)">
+<span class="menuIcon">📚</span> LIBRARY
+</button>
+
+</div>
+
+<div class="historyTitle">
+CHAT HISTORY
+</div>
+
+<div class="historyList" id="historyList"></div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<header>
+
+<div class="headerLeft">
+
+<button class="openSidebar" id="openSidebar" onclick="toggleSidebar()">
+☰
+</button>
+
+<div class="brand">
+
+<h1>BORTAN AI</h1>
+
+<p>
+BRAIN OPTIMIZED RAGED TERABYTE ALGORITHMIC-ANALYTIC NEUTRAL-NODE
+</p>
+
+</div>
+
+</div>
+
+<div class="online">
+● SYSTEM ONLINE
+</div>
+
+</header>
+
+
+<!-- CHAT -->
+
+<div id="chat" class="tab active">
+
+<section class="panel">
+
+<div class="title">
+<h2>BORTAN AI CHAT</h2>
+<p>ASK • THINK • EXPLORE</p>
+</div>
+
+<div class="chatMessages" id="chatMessages">
+
+<div class="message bortanMessage">
+
+<strong>BORTAN AI 🧠</strong>
+
+<br><br>
+
+Hello! I am BORTAN AI.
+
+<br><br>
+
+BORTAN means:
+
+<br><br>
+
+<strong>
+Brain Optimized Raged Terabyte Algorithmic-Analytic Neutral-Node
+</strong>
+
+</div>
+
+</div>
+
+<div class="searchRow">
+
+<div class="searchBox">
+
+<span class="searchIcon">⌕</span>
+
+<input
+id="chatInput"
+type="text"
+placeholder="Ask BORTAN anything..."
+onkeydown="if(event.key==='Enter') askFromChat()">
+
+</div>
+
+<button class="send" onclick="askFromChat()">
+SEND ➤
+</button>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- PRIVATE CHAT -->
+
+<div id="private" class="tab">
+
+<section class="panel">
+
+<div class="title">
+<h2>🔒 PRIVATE CHAT</h2>
+<p>SEPARATE PRIVATE CONVERSATION</p>
+</div>
+
+<div class="privateNotice">
+🔒 PRIVATE CHAT MODE ACTIVE
+</div>
+
+<div class="chatMessages" id="privateMessages">
+
+<div class="message bortanMessage">
+
+<strong>BORTAN PRIVATE 🔒</strong>
+
+<br><br>
+
+This is a separate conversation area.
+
+</div>
+
+</div>
+
+<div class="searchRow">
+
+<div class="searchBox">
+
+<span class="searchIcon">⌕</span>
+
+<input
+id="privateInput"
+type="text"
+placeholder="Ask privately..."
+onkeydown="if(event.key==='Enter') askFromPrivate()">
+
+</div>
+
+<button class="send" onclick="askFromPrivate()">
+SEND ➤
+</button>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- =========================
+     BRAIN MODE
+========================= -->
+
+<div id="brain" class="tab">
+
+<section class="panel">
+
+<div class="title">
+<h2>BORTAN VIRTUAL BRAIN</h2>
+<p>QUESTION → WAVE → THINKING LEVEL</p>
+</div>
+
+<div class="brainArea">
+
+<svg class="waveSvg"
+viewBox="0 0 1400 400"
+preserveAspectRatio="none">
+
+<!-- LEFT 5 WAVES -->
+
+<path id="wave1" class="wavePath"
+d="M0 220 C40 220 60 270 110 250"/>
+
+<path id="wave2" class="wavePath"
+d="M110 250 C160 230 150 150 210 150 C260 150 250 290 310 290"/>
+
+<path id="wave3" class="wavePath"
+d="M310 290 C370 290 350 105 425 105"/>
+
+<path id="wave4" class="wavePath"
+d="M425 105 C490 105 475 305 545 305"/>
+
+<path id="wave5" class="wavePath"
+d="M545 305 C590 305 600 220 650 220"/>
+
+<!-- RIGHT 5 WAVES -->
+
+<path id="wave6" class="wavePath"
+d="M750 220 C800 220 810 305 855 305"/>
+
+<path id="wave7" class="wavePath"
+d="M855 305 C925 305 910 105 975 105"/>
+
+<path id="wave8" class="wavePath"
+d="M975 105 C1050 105 1030 290 1090 290"/>
+
+<path id="wave9" class="wavePath"
+d="M1090 290 C1150 290 1140 150 1190 150 C1250 150 1240 230 1290 250"/>
+
+<path id="wave10" class="wavePath"
+d="M1290 250 C1340 270 1360 220 1400 220"/>
+
+<!-- PARTICLE -->
+
+<circle id="brainEnergy"
+class="energy"
+r="9"
+cx="0"
+cy="0"></circle>
+
+</svg>
+
+<div class="coreShell">
+
+<div class="core" id="brainCore">
+
+<div class="coreText">
+BORTAN
+<span>CORE</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="processingGrid">
+
+<div class="processCard">
+<div class="processName">
+<span>UNDERSTANDING</span>
+<span class="processPercent" id="brainUnderstandingPercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="brainUnderstandingBar"></div>
+</div>
+</div>
+
+<div class="processCard">
+<div class="processName">
+<span>REASONING</span>
+<span class="processPercent" id="brainReasoningPercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="brainReasoningBar"></div>
+</div>
+</div>
+
+<div class="processCard">
+<div class="processName">
+<span>KNOWLEDGE</span>
+<span class="processPercent" id="brainKnowledgePercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="brainKnowledgeBar"></div>
+</div>
+</div>
+
+<div class="processCard">
+<div class="processName">
+<span>ANSWER CREATION</span>
+<span class="processPercent" id="brainAnswerPercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="brainAnswerBar"></div>
+</div>
+</div>
+
+</div>
+
+<div class="statusArea">
+
+Question Level:
+<strong id="brainQuestionLevel">WAITING</strong>
+
+|
+
+Wave:
+<strong id="brainWaveLevel">NONE</strong>
+
+|
+
+Mode:
+<strong id="brainMode">READY</strong>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- =========================
+     LIVE MODE
+========================= -->
+
+<div id="live" class="tab">
+
+<section class="panel">
+
+<div class="title">
+
+<h2>⚡ BORTAN LIVE BRAIN</h2>
+
+<p>LIVE QUESTION PROCESSING VISUALIZATION</p>
+
+</div>
+
+
+<!-- FULL LIVE BRAIN -->
+
+<div class="brainArea">
+
+<svg
+class="waveSvg"
+viewBox="0 0 1400 400"
+preserveAspectRatio="none">
+
+<!-- LEFT 5 WAVES -->
+
+<path id="liveWave1" class="wavePath"
+d="M0 220 C40 220 60 270 110 250"/>
+
+<path id="liveWave2" class="wavePath"
+d="M110 250 C160 230 150 150 210 150 C260 150 250 290 310 290"/>
+
+<path id="liveWave3" class="wavePath"
+d="M310 290 C370 290 350 105 425 105"/>
+
+<path id="liveWave4" class="wavePath"
+d="M425 105 C490 105 475 305 545 305"/>
+
+<path id="liveWave5" class="wavePath"
+d="M545 305 C590 305 600 220 650 220"/>
+
+
+<!-- RIGHT 5 WAVES -->
+
+<path id="liveWave6" class="wavePath"
+d="M750 220 C800 220 810 305 855 305"/>
+
+<path id="liveWave7" class="wavePath"
+d="M855 305 C925 305 910 105 975 105"/>
+
+<path id="liveWave8" class="wavePath"
+d="M975 105 C1050 105 1030 290 1090 290"/>
+
+<path id="liveWave9" class="wavePath"
+d="M1090 290 C1150 290 1140 150 1190 150 C1250 150 1240 230 1290 250"/>
+
+<path id="liveWave10" class="wavePath"
+d="M1290 250 C1340 270 1360 220 1400 220"/>
+
+
+<!-- LIVE PARTICLE -->
+
+<circle
+id="liveEnergy"
+class="energy"
+r="9"
+cx="0"
+cy="0"></circle>
+
+</svg>
+
+
+<!-- LIVE CORE -->
+
+<div class="coreShell">
+
+<div class="core" id="liveCore">
+
+<div class="coreText">
+
+BORTAN
+
+<span>CORE</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- LIVE SEARCH -->
+
+<div class="searchRow">
+
+<div class="searchBox">
+
+<span class="searchIcon">⌕</span>
+
+<input
+id="liveInput"
+type="text"
+placeholder="Ask BORTAN in LIVE mode..."
+onkeydown="if(event.key==='Enter') askFromLive()">
+
+</div>
+
+<button class="send" onclick="askFromLive()">
+ANALYSE ⚡
+</button>
+
+</div>
+
+
+<!-- LIVE PROCESSING -->
+
+<div class="processingGrid">
+
+<div class="processCard">
+<div class="processName">
+<span>UNDERSTANDING</span>
+<span class="processPercent" id="understandingPercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="understandingBar"></div>
+</div>
+</div>
+
+<div class="processCard">
+<div class="processName">
+<span>REASONING</span>
+<span class="processPercent" id="reasoningPercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="reasoningBar"></div>
+</div>
+</div>
+
+<div class="processCard">
+<div class="processName">
+<span>KNOWLEDGE</span>
+<span class="processPercent" id="knowledgePercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="knowledgeBar"></div>
+</div>
+</div>
+
+<div class="processCard">
+<div class="processName">
+<span>ANSWER CREATION</span>
+<span class="processPercent" id="answerPercent">100%</span>
+</div>
+<div class="bar">
+<div class="fill" id="answerBar"></div>
+</div>
+</div>
+
+</div>
+
+
+<div class="statusArea" id="liveStatus">
+
+<strong>BORTAN LIVE SYSTEM READY</strong>
+
+<br><br>
+
+Ask a question to activate the Virtual Brain.
+
+</div>
+
+
+<!-- LIVE CHAT HISTORY -->
+
+<div class="liveChat">
+
+<div class="title">
+
+<h2 style="font-size:16px;">
+LIVE CHAT HISTORY
+</h2>
+
+</div>
+
+<div class="liveHistory" id="liveHistory"></div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- LIBRARY -->
+
+<div id="library" class="tab">
+
+<section class="panel">
+
+<div class="title">
+<h2>BORTAN LIBRARY</h2>
+<p>FILES • KNOWLEDGE • PROJECTS</p>
+</div>
+
+<div class="libraryGrid">
+
+<div class="libraryCard">
+
+<div class="libraryIcon">📄</div>
+
+<h3>DOCUMENTS</h3>
+
+<p>
+Future documents and notes can be stored here.
+</p>
+
+</div>
+
+<div class="libraryCard">
+
+<div class="libraryIcon">📚</div>
+
+<h3>KNOWLEDGE</h3>
+
+<p>
+Your BORTAN knowledge collection.
+</p>
+
+</div>
+
+<div class="libraryCard">
+
+<div class="libraryIcon">🗂️</div>
+
+<h3>PROJECTS</h3>
+
+<p>
+Organize your future projects here.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SIDEBAR
+========================= */
+
+function toggleSidebar(){
+
+    const sidebar =
+    document.getElementById("sidebar");
+
+    const openButton =
+    document.getElementById("openSidebar");
+
+    sidebar.classList.toggle("closed");
+
+    if(sidebar.classList.contains("closed")){
+        openButton.style.display="block";
+    }else{
+        openButton.style.display="none";
+    }
+
+}
+
+
+/* =========================
+   TABS
+========================= */
+
+function openTab(tabName,button){
+
+    document.querySelectorAll(".tab")
+    .forEach(tab=>{
+        tab.classList.remove("active");
+    });
+
+    document.getElementById(tabName)
+    .classList.add("active");
+
+    document.querySelectorAll(".menu button")
+    .forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    if(button){
+        button.classList.add("active");
+    }
+
+}
+
+
+function openPrivateChat(button){
+    openTab("private",button);
+}
+
+
+/* =========================
+   NEW CHAT
+========================= */
+
+function newChat(){
+
+    document.getElementById("chatMessages").innerHTML = `
+
+    <div class="message bortanMessage">
+
+    <strong>BORTAN AI 🧠</strong>
+
+    <br><br>
+
+    New conversation started.
+
+    <br><br>
+
+    Ask me anything.
+
+    </div>
+
+    `;
+
+    openTab(
+        "chat",
+        document.querySelector(".menu button")
+    );
+
+}
+
+
+/* =========================
+   QUESTION ANALYSIS
+========================= */
+
+function analyseQuestion(question){
+
+    const q =
+    question.toLowerCase().trim();
+
+    let wave = 3;
+    let level = "Easy";
+    let mode = "NORMAL";
+
+    if(
+        q.length < 12 ||
+        /^(hi|hello|hey|hii)/.test(q)
+    ){
+
+        wave=1;
+        level="Easiest";
+        mode="FAST";
+
+    }
+
+    else if(q.length < 30){
+
+        wave=2;
+        level="Easier";
+        mode="FAST";
+
+    }
+
+    else if(
+        q.includes("what is") ||
+        q.includes("who is") ||
+        q.includes("where is")
+    ){
+
+        wave=3;
+        level="Easy";
+        mode="NORMAL";
+
+    }
+
+    else if(
+        q.includes("tell me") ||
+        q.includes("give me")
+    ){
+
+        wave=4;
+        level="Mild";
+        mode="NORMAL";
+
+    }
+
+    else if(
+        q.includes("explain") ||
+        q.includes("why")
+    ){
+
+        wave=5;
+        level="Moderate";
+        mode="THINKING";
+
+    }
+
+    if(
+        q.includes("does god exist") ||
+        q.includes("meaning of life") ||
+        q.includes("consciousness") ||
+        q.includes("existence") ||
+        q.length > 220
+    ){
+
+        wave="CORE";
+        level="Arduous";
+        mode="DEEP THINKING";
+
+    }
+
+    else if(
+        q.includes("analyse") ||
+        q.includes("analyze") ||
+        q.length > 130
+    ){
+
+        wave=6;
+        level="Complex";
+        mode="COMPLEX";
+
+    }
+
+    else if(
+        q.includes("calculate") ||
+        q.includes("equation") ||
+        q.includes("mathematics")
+    ){
+
+        wave=7;
+        level="Hard";
+        mode="REASONING";
+
+    }
+
+    else if(
+        q.includes("solve") ||
+        q.includes("compare")
+    ){
+
+        wave=8;
+        level="Harder";
+        mode="ADVANCED";
+
+    }
+
+    else if(
+        q.includes("prove") ||
+        q.includes("derive")
+    ){
+
+        wave=9;
+        level="Hardest";
+        mode="MAXIMUM";
+
+    }
+
+    else if(
+        q.includes("theory") ||
+        q.includes("universe")
+    ){
+
+        wave=10;
+        level="Difficult";
+        mode="DIFFICULT";
+
+    }
+
+    return{
+        wave,
+        level,
+        mode
+    };
+
+}
+
+
+/* =========================
+   RESET BRAIN
+========================= */
+
+function resetBrain(){
+
+    for(let i=1;i<=10;i++){
+
+        document
+        .getElementById("wave"+i)
+        .classList.remove("active");
+
+    }
+
+    document
+    .getElementById("brainCore")
+    .classList.remove("active");
+
+    document
+    .getElementById("brainEnergy")
+    .style.display="none";
+
+}
+
+
+/* =========================
+   RESET LIVE BRAIN
+========================= */
+
+function resetLiveBrain(){
+
+    for(let i=1;i<=10;i++){
+
+        document
+        .getElementById("liveWave"+i)
+        .classList.remove("active");
+
+    }
+
+    document
+    .getElementById("liveCore")
+    .classList.remove("active");
+
+    document
+    .getElementById("liveEnergy")
+    .style.display="none";
+
+}
+
+
+/* =========================
+   ANIMATE PARTICLE
+   ON REAL WAVE PATH
+========================= */
+
+function animateParticle(pathId,particleId){
+
+    const path =
+    document.getElementById(pathId);
+
+    const particle =
+    document.getElementById(particleId);
+
+    const length =
+    path.getTotalLength();
+
+    particle.style.display="block";
+
+    let startTime=null;
+
+    const duration=1800;
+
+    function animate(time){
+
+        if(!startTime){
+            startTime=time;
+        }
+
+        const progress=Math.min(
+            (time-startTime)/duration,
+            1
+        );
+
+        const point=
+        path.getPointAtLength(
+            progress*length
+        );
+
+        particle.setAttribute(
+            "cx",
+            point.x
+        );
+
+        particle.setAttribute(
+            "cy",
+            point.y
+        );
+
+        if(progress<1){
+
+            requestAnimationFrame(animate);
+
+        }
+
+    }
+
+    requestAnimationFrame(animate);
+
+}
+
+
+/* =========================
+   UPDATE NORMAL BRAIN
+========================= */
+
+function updateBrain(result){
+
+    resetBrain();
+
+    document
+    .getElementById("brainQuestionLevel")
+    .textContent=result.level;
+
+    document
+    .getElementById("brainWaveLevel")
+    .textContent=
+    result.wave==="CORE"
+    ? "BORTAN CORE"
+    : "WAVE "+result.wave;
+
+    document
+    .getElementById("brainMode")
+    .textContent=result.mode;
+
+
+    if(result.wave==="CORE"){
+
+        document
+        .getElementById("brainCore")
+        .classList.add("active");
+
+        return;
+    }
+
+
+    document
+    .getElementById("wave"+result.wave)
+    .classList.add("active");
+
+
+    setTimeout(()=>{
+
+        animateParticle(
+            "wave"+result.wave,
+            "brainEnergy"
+        );
+
+    },150);
+
+}
+
+
+/* =========================
+   UPDATE LIVE BRAIN
+========================= */
+
+function updateLiveBrain(result){
+
+    resetLiveBrain();
+
+
+    if(result.wave==="CORE"){
+
+        document
+        .getElementById("liveCore")
+        .classList.add("active");
+
+        return;
+    }
+
+
+    document
+    .getElementById(
+        "liveWave"+result.wave
+    )
+    .classList.add("active");
+
+
+    setTimeout(()=>{
+
+        animateParticle(
+            "liveWave"+result.wave,
+            "liveEnergy"
+        );
+
+    },150);
+
+}
+
+
+/* =========================
+   PROCESSING BARS
+========================= */
+
+function setValue(prefix,value){
+
+    document
+    .getElementById(prefix+"Percent")
+    .textContent=value+"%";
+
+    document
+    .getElementById(prefix+"Bar")
+    .style.width=value+"%";
+
+}
+
+
+function updateProcesses(){
+
+    const understanding =
+    Math.floor(80+Math.random()*21);
+
+    const reasoning =
+    Math.floor(70+Math.random()*31);
+
+    const knowledge =
+    Math.floor(75+Math.random()*26);
+
+    const answer =
+    Math.floor(80+Math.random()*21);
+
+
+    setValue(
+        "brainUnderstanding",
+        understanding
+    );
+
+    setValue(
+        "brainReasoning",
+        reasoning
+    );
+
+    setValue(
+        "brainKnowledge",
+        knowledge
+    );
+
+    setValue(
+        "brainAnswer",
+        answer
+    );
+
+
+    setValue(
+        "understanding",
+        understanding
+    );
+
+    setValue(
+        "reasoning",
+        reasoning
+    );
+
+    setValue(
+        "knowledge",
+        knowledge
+    );
+
+    setValue(
+        "answer",
+        answer
+    );
+
+}
+
+
+/* =========================
+   ADD MESSAGE
+========================= */
+
+function addMessage(
+containerId,
+text,
+className
+){
+
+    const container =
+    document.getElementById(containerId);
+
+    const message =
+    document.createElement("div");
+
+    message.className=
+    "message "+className;
+
+    message.innerHTML=text;
+
+    container.appendChild(message);
+
+    container.scrollTop=
+    container.scrollHeight;
+
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function addHistory(question){
+
+    const history =
+    document.getElementById("historyList");
+
+    const item =
+    document.createElement("div");
+
+    item.className="historyItem";
+
+    item.textContent=question;
+
+    history.prepend(item);
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(text){
+
+    const div =
+    document.createElement("div");
+
+    div.textContent=text;
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================
+   NORMAL CHAT
+========================= */
+
+function askFromChat(){
+
+    const input =
+    document.getElementById("chatInput");
+
+    const question =
+    input.value.trim();
+
+    if(question==="") return;
+
+
+    addMessage(
+
+        "chatMessages",
+
+        "<strong>YOU</strong><br><br>"+
+        escapeHTML(question),
+
+        "userMessage"
+
+    );
+
+
+    addHistory(question);
+
+
+    const result =
+    analyseQuestion(question);
+
+
+    updateBrain(result);
+
+    updateProcesses();
+
+    input.value="";
+
+
+    setTimeout(()=>{
+
+        addMessage(
+
+            "chatMessages",
+
+            "<strong>BORTAN AI 🧠</strong>" +
+
+            "<br><br>" +
+
+            "I processed your question." +
+
+            "<br><br>" +
+
+            "Virtual Brain Level: <strong>" +
+            result.level +
+            "</strong>" +
+
+            "<br>" +
+
+            "Processing Mode: <strong>" +
+            result.mode +
+            "</strong>",
+
+            "bortanMessage"
+
+        );
+
+    },1900);
+
+}
+
+
+/* =========================
+   PRIVATE CHAT
+========================= */
+
+function askFromPrivate(){
+
+    const input =
+    document.getElementById("privateInput");
+
+    const question =
+    input.value.trim();
+
+    if(question==="") return;
+
+
+    addMessage(
+
+        "privateMessages",
+
+        "<strong>YOU 🔒</strong><br><br>"+
+        escapeHTML(question),
+
+        "userMessage"
+
+    );
+
+
+    input.value="";
+
+
+    const result =
+    analyseQuestion(question);
+
+    updateBrain(result);
+
+    updateProcesses();
+
+
+    setTimeout(()=>{
+
+        addMessage(
+
+            "privateMessages",
+
+            "<strong>BORTAN PRIVATE 🔒</strong>" +
+
+            "<br><br>" +
+
+            "Private conversation processing completed.",
+
+            "bortanMessage"
+
+        );
+
+    },1800);
+
+}
+
+
+/* =========================
+   LIVE MODE
+========================= */
+
+function askFromLive(){
+
+    const input =
+    document.getElementById("liveInput");
+
+    const question =
+    input.value.trim();
+
+    if(question==="") return;
+
+
+    const result =
+    analyseQuestion(question);
+
+
+    /* FULL LIVE WAVE BRAIN */
+
+    updateLiveBrain(result);
+
+
+    updateProcesses();
+
+
+    document
+    .getElementById("liveStatus")
+    .innerHTML=
+
+    "<strong>⚡ LIVE ANALYSIS ACTIVE</strong>" +
+
+    "<br><br>" +
+
+    "Processing Level: <strong>" +
+    result.level +
+    "</strong>" +
+
+    "<br>" +
+
+    "Mode: <strong>" +
+    result.mode +
+    "</strong>";
+
+
+    addMessage(
+
+        "liveHistory",
+
+        "<strong>YOU</strong><br><br>"+
+        escapeHTML(question),
+
+        "userMessage"
+
+    );
+
+
+    addHistory(question);
+
+    input.value="";
+
+
+    setTimeout(()=>{
+
+        addMessage(
+
+            "liveHistory",
+
+            "<strong>BORTAN LIVE ⚡</strong>" +
+
+            "<br><br>" +
+
+            "The BORTAN Virtual Brain processed this question through the " +
+
+            "<strong>" +
+            result.level +
+            "</strong> level.",
+
+            "bortanMessage"
+
+        );
+
+    },1900);
+
+}
+
+
+/* =========================
+   INITIAL VALUES
+========================= */
+
+setValue("brainUnderstanding",100);
+setValue("brainReasoning",100);
+setValue("brainKnowledge",100);
+setValue("brainAnswer",100);
+
+setValue("understanding",100);
+setValue("reasoning",100);
+setValue("knowledge",100);
+setValue("answer",100);
+
+</script>
+
+</body>
+</html>
