@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 import os
 import time
@@ -139,3 +140,15 @@ if __name__ == "__main__":
         port=5000,
         debug=True
     )
+=======
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)
+>>>>>>> 0a01ac2728dae95bfe3fe343cb1da30dd95cac1b
